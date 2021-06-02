@@ -15,34 +15,30 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+package io.paradiddle.otp;
 
-package io.paradiddle.messaging;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.function.Consumer;
+public interface PostOffice {
+    void register(long pid, Mailbox mailbox);
+    Mailbox boxFor(long pid);
 
-public interface MessagePattern {
-    boolean matches(Object message);
-    void apply(Object message);
+    class Generic implements PostOffice {
+        private final Map<Long, Mailbox> boxes;
 
-    class Generic<T> implements MessagePattern {
-        private final Class<T> messageType;
-        private final Consumer<T> action;
-
-        public Generic(final Class<T> messageType, final Consumer<T> action) {
-            this.messageType = messageType;
-            this.action = action;
+        public Generic() {
+            this.boxes = new HashMap<>();
         }
 
         @Override
-        public boolean matches(final Object message) {
-            return this.messageType.isInstance(message);
+        public void register(final long pid, final Mailbox mailbox) {
+            this.boxes.put(pid, mailbox);
         }
 
         @Override
-        public void apply(final Object message) {
-            final T converted = this.messageType.cast(message);
-            this.action.accept(converted);
+        public Mailbox boxFor(final long pid) {
+            return this.boxes.get(pid);
         }
     }
-
 }

@@ -15,7 +15,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package io.paradiddle.messaging;
+package io.paradiddle.otp;
 
 public abstract class BIF {
     private static final PostOffice postOffice = new PostOffice.Generic();
@@ -25,5 +25,11 @@ public abstract class BIF {
         final var mailbox = new Mailbox.Generic();
         postOffice.register(thread.getId(), mailbox);
         return new PID.Generic(mailbox);
+    }
+
+    public static void receive(final MessagePattern... patterns) throws InterruptedException {
+        postOffice
+            .boxFor(Thread.currentThread().getId())
+            .retrieve(patterns);
     }
 }

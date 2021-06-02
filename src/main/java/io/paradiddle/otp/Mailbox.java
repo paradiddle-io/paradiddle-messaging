@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.paradiddle.messaging;
+package io.paradiddle.otp;
 
 import java.util.Deque;
 import java.util.LinkedList;
