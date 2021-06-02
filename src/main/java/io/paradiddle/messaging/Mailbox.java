@@ -19,6 +19,8 @@
 package io.paradiddle.messaging;
 
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -30,11 +32,9 @@ public interface Mailbox {
 
     class Generic implements Mailbox {
         private final BlockingDeque<Object> messageQueue;
-        private final BlockingDeque<Object> saveQueue;
 
         public Generic() {
             this.messageQueue = new LinkedBlockingDeque<>();
-            this.saveQueue = new LinkedBlockingDeque<>();
         }
 
         @Override
@@ -45,6 +45,7 @@ public interface Mailbox {
         @Override
         public void retrieve(final MessagePattern... patterns) throws InterruptedException {
             final List<MessagePattern> patternList = List.of(patterns);
+            final Deque<Object> saveQueue = new LinkedList<>();
             final AtomicBoolean notMatched = new AtomicBoolean();
             do {
                 final Object message = this.messageQueue.take();
@@ -57,15 +58,12 @@ public interface Mailbox {
                             notMatched.set(false);
                         },
                         () -> {
-                            this.saveQueue.addFirst(message);
+                            saveQueue.addFirst(message);
                             notMatched.set(true);
                         }
                     );
             } while(notMatched.get());
-            final List<Object> temp = new ArrayList<>(this.saveQueue.size());
-            this.saveQueue.drainTo(temp);
-            temp.forEach(this.messageQueue::addFirst);
-            temp.clear();
+            saveQueue.forEach(this.messageQueue::addFirst);
         }
     }
 }
