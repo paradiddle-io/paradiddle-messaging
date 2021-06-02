@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 #
-# paradiddle-messaging A library that builds on OpenJDK Project Loom to provide Erlang-style message passing between processes.
+# paradiddle-otp A library that builds on OpenJDK Project Loom to bring Erlang idioms to Java.
 # Copyright (C) 2021 Michael Juliano
 #
 # This program is free software; you can redistribute it and/or modify
